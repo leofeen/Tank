@@ -4,6 +4,10 @@
 #define R_MOTOR_REVERSE false
 #define L_MOTOR_REVERSE false
 
+// Обратить движение серв
+#define SERVO_Y_REVERSE false
+#define SERVO_X_REVERSE true
+
 // пины блютуз
 #define RX 0
 #define TX 1
@@ -222,8 +226,15 @@ void aimServos(int angle, int strength)
   int servoDirection = (angle <= 135 || angle > 315) ? 1 : -1;
   int servoIndex = ((angle > 45 && angle <= 135) || (angle > 225 && angle <= 315)) ? 1 : 0;
 
+  int servoSpeedToUse = servoSpeed;
+
+  if ((servoIndex == 0 && SERVO_X_REVERSE) || (servoIndex == 1 && SERVO_Y_REVERSE))
+  {
+    servoSpeedToUse *= -1;
+  }
+
   int currentServoAngle = servosAngles[servoIndex];
-  int newServoAngle = constrain(currentServoAngle + servoSpeed*servoDirection, servosMinAngles[servoIndex], servosMaxAngles[servoIndex]);
+  int newServoAngle = constrain(currentServoAngle + servoSpeedToUse*servoDirection, servosMinAngles[servoIndex], servosMaxAngles[servoIndex]);
   if (newServoAngle == currentServoAngle) return;
   
   servosAngles[servoIndex] = newServoAngle;
